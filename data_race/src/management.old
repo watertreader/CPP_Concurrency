@@ -1,0 +1,68 @@
+#include <thread>
+#include <iostream>
+#include <stdio.h>
+
+#include <mutex>
+
+/* this is to demonstrate uses of mutex in printing*/
+
+
+#include "management_class.h"
+
+std::mutex mu;
+
+
+
+
+   
+void shared_printing1(std::string msg, int id)
+{
+    std::lock_guard<std::mutex> guard (mu);    // mutex will unlock if the function goes out of scope
+    //mu.lock();
+    std::cout << msg << " " << id << std::endl;
+    //mu.unlock();
+}
+
+
+void shared_printing(std::string msg, int id)
+{
+
+    mu.lock();
+    std::cout << msg << " " << id << std::endl;   // this will cause a lock forever if 
+                                                // std::cout for some reason throw an exception and dun finish execution
+                                                 // so a lock guard is needed
+    mu.unlock();
+}
+
+void function_1()
+{
+    for(int i = 0; i >= -100; i--)
+        shared_printing(std::string("from t1"), i);
+}
+
+// int main()
+// {
+//     std::thread t1(function_1);   // thread t1 creation and start it running
+
+//     for(int i = 0; i <= 100; i++)
+//                shared_printing(std::string("from tmain"), i);
+
+//     t1.join();   // main thread finish running
+
+        
+//     return 0;
+// }
+
+int main()
+{
+
+    std::thread t1(function_1);   // thread t1 creation and start it running
+
+    for(int i = 0; i <= 100; i++)
+               shared_printing(std::string("from tmain"), i);
+
+    t1.join();   // main thread finish running
+
+        
+    return 0;
+}
