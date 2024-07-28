@@ -8,7 +8,22 @@
 
 /* this is to demonstrate deadlock in printing*/
 /* main thread is waiting for guard1 to be release while t1 is waiting for guard2 to be released*/
+/* the way to unlocked this is to make sure mutex are locked in the same sequence*/
 
+
+/* Avoiding deadlock 
+1) Always  strive to use single mutex in one function
+2) Avoid locking a mutex and then proceed to call other api function (like other library or some hardware related function)
+-----this is to prevent after you lock and then calling other api which might contain another mutex and create deadlock
+----- hardware might take long and unpredictable time and might have exception
+3) if need to use more than one lock use std::lock to lock both function
+4) if do not have standard library, always lock two or more locks in same sequence in all function
+
+Locking Granularity
+1) fine -grained lock:locks only a small amount of data
+2) coarse-grained lock: locks large amount of data
+
+*/
 
 #include "management_class.h"
 
